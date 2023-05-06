@@ -795,12 +795,12 @@ void HolyPaladinAuraRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>&
 
 void HolyPaladinBlessingStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
 {
-    HolyPaladinBlessingStrategy::InitCombatTriggers(triggers);
+    PaladinBlessingStrategy::InitCombatTriggers(triggers);
 }
 
 void HolyPaladinBlessingStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
 {
-    HolyPaladinBlessingStrategy::InitNonCombatTriggers(triggers);
+    PaladinBlessingStrategy::InitNonCombatTriggers(triggers);
 }
 
 void HolyPaladinBlessingPveStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
@@ -1223,12 +1223,12 @@ void HolyPaladinAuraRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>&
 
 void HolyPaladinBlessingStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
 {
-    HolyPaladinBlessingStrategy::InitCombatTriggers(triggers);
+    PaladinBlessingStrategy::InitCombatTriggers(triggers);
 }
 
 void HolyPaladinBlessingStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
 {
-    HolyPaladinBlessingStrategy::InitNonCombatTriggers(triggers);
+    PaladinBlessingStrategy::InitNonCombatTriggers(triggers);
 }
 
 void HolyPaladinBlessingPveStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
