@@ -498,4 +498,37 @@ namespace ai
 
     DEBUFF_TRIGGER(AvengerShieldTrigger, "avenger's shield");
     BOOST_TRIGGER(DivineIlluminationBoostTrigger, "divine illumination");
+
+    class BeaconOfLightTrigger : public Trigger
+    {
+    public:
+        BeaconOfLightTrigger(PlayerbotAI* ai) : Trigger(ai, "beacon of light") {}
+
+        bool IsActive() override
+        {
+            // Required Beacon of Light talent
+            if (bot->HasSpell(53563))
+                return false;
+
+            Group* group = bot->GetGroup();
+            if (group)
+            {
+                for (GroupReference* gr = group->GetFirstMember(); gr; gr = gr->next())
+                {
+                    Player* member = gr->getSource();
+                    // Check that target is tank in bot group and dont have bot beacon of light
+                    if (!group->SameSubGroup((Player*)ai, member) && ai->IsTank(member) && !ai->HasAura("light's beacon", member, true))
+                    {
+                        return true;
+                    }
+                    else if (ai->IsTank(member))
+                    {
+                        return false;
+                    }
+                }
+            }
+
+            return false;
+        }
+    };
 }

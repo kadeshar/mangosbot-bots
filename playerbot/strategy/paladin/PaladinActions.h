@@ -618,6 +618,40 @@ namespace ai
         string GetTargetName() override { return "party member to remove roots"; }
     };
 
+    class CastBeaconOfLightAction : public Action
+    {
+    public:
+        CastBeaconOfLightAction(PlayerbotAI* ai) : Action(ai, "beacon of light") {}
+
+        virtual bool Execute(Event& event)
+        {
+            Group* group = bot->GetGroup();
+            if (group)
+            {
+                for (GroupReference* gr = group->GetFirstMember(); gr; gr = gr->next())
+                {
+                    Player* member = gr->getSource();
+
+                    if (!ai->IsTank(member))
+                    {
+                        continue;
+                    }
+
+                    if (ai->HasAura("light's beacon", member, true))
+                        return false;
+
+                    /*if (!group->SameSubGroup((Player*)ai, member))
+                        return false;*/
+
+                    ai->CastSpell("beacon of light", (Unit*)member);
+                    return true;
+                }
+            }
+
+            return false;
+        }
+    };
+
     PROTECT_ACTION(CastBlessingOfProtectionProtectAction, "blessing of protection");
 
     class UpdatePaladinPveStrategiesAction : public UpdateStrategyDependenciesAction

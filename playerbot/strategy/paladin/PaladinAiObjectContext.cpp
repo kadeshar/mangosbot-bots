@@ -548,6 +548,7 @@ namespace ai
                 creators["divine illumination"] = &AiObjectContextInternal::divine_illumination;
                 creators["hand of sacrifice"] = &AiObjectContextInternal::hand_of_sacrifice;
                 creators["blessing of sacrifice"] = &AiObjectContextInternal::blessing_of_sacrifice;
+                creators["beacon of light"] = &AiObjectContextInternal::beacon_of_light;
                 creators["update pve strats"] = &AiObjectContextInternal::update_pve_strats;
                 creators["update pvp strats"] = &AiObjectContextInternal::update_pvp_strats;
                 creators["update raid strats"] = &AiObjectContextInternal::update_raid_strats;
@@ -658,6 +659,7 @@ namespace ai
             static Action* holy_shock_on_party(PlayerbotAI* ai) { return new CastHolyShockOnPartyAction(ai); }
             static Action* hand_of_sacrifice(PlayerbotAI* ai) { return new CastHandOfSacrificeAction(ai); }
             static Action* blessing_of_sacrifice(PlayerbotAI* ai) { return new CastBlessingOfSacrificeAction(ai); }
+            static Action* beacon_of_light(PlayerbotAI* ai) { return new CastBeaconOfLightAction(ai); }
             static Action* update_pve_strats(PlayerbotAI* ai) { return new UpdatePaladinPveStrategiesAction(ai); }
             static Action* update_pvp_strats(PlayerbotAI* ai) { return new UpdatePaladinPvpStrategiesAction(ai); }
             static Action* update_raid_strats(PlayerbotAI* ai) { return new UpdatePaladinRaidStrategiesAction(ai); }
