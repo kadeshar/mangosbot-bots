@@ -640,8 +640,8 @@ namespace ai
                     if (ai->HasAura("light's beacon", member, true))
                         return false;
 
-                    /*if (!group->SameSubGroup((Player*)ai, member))
-                        return false;*/
+                    if (!group->SameSubGroup(bot, member))
+                        return false;
 
                     ai->CastSpell("beacon of light", (Unit*)member);
                     return true;

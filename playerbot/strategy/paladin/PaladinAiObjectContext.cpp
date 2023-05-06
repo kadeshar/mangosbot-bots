@@ -369,6 +369,7 @@ namespace ai
                 creators["hammer of justice on enemy"] = &TriggerFactoryInternal::hammer_on_enemy;
                 creators["hand of sacrifice"] = &TriggerFactoryInternal::hand_of_sacrifice;
                 creators["blessing of sacrifice"] = &TriggerFactoryInternal::blessing_of_sacrifice;
+                creators["beacon of light"] = &TriggerFactoryInternal::beacon_of_light;
             }
 
         private:
@@ -437,6 +438,7 @@ namespace ai
             static Trigger* repentance_interrupt(PlayerbotAI* ai) { return new RepentanceInterruptTrigger(ai); }
             static Trigger* hand_of_sacrifice(PlayerbotAI* ai) { return new HandOfSacrificeTrigger(ai); }
             static Trigger* blessing_of_sacrifice(PlayerbotAI* ai) { return new BlessingOfSacrificeTrigger(ai); }
+            static Trigger* beacon_of_light(PlayerbotAI* ai) { return new BeaconOfLightTrigger(ai); }
         };
 
         class AiObjectContextInternal : public NamedObjectContext<Action>

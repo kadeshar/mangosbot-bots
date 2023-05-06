@@ -516,15 +516,19 @@ namespace ai
                 for (GroupReference* gr = group->GetFirstMember(); gr; gr = gr->next())
                 {
                     Player* member = gr->getSource();
-                    // Check that target is tank in bot group and dont have bot beacon of light
-                    if (!group->SameSubGroup((Player*)ai, member) && ai->IsTank(member) && !ai->HasAura("light's beacon", member, true))
+
+                    if (!ai->IsTank(member))
                     {
-                        return true;
+                        continue;
                     }
-                    else if (ai->IsTank(member))
-                    {
+
+                    if (ai->HasAura("light's beacon", member, true))
                         return false;
-                    }
+
+                    if (!group->SameSubGroup(bot, member))
+                        return false;
+
+                    return true;
                 }
             }
 

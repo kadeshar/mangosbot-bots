@@ -864,6 +864,10 @@ void HolyPaladinStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
                              new NextAction("holy light", ACTION_MEDIUM_HEAL + 1), NULL)));
 
     triggers.push_back(new TriggerNode(
+        "beacon of light",
+        NextAction::array(0, new NextAction("beacon of light", ACTION_MEDIUM_HEAL + 1), NULL)));
+
+    triggers.push_back(new TriggerNode(
         "medium health",
         NextAction::array(0, new NextAction("flash of light", ACTION_MEDIUM_HEAL), NULL)));
 
