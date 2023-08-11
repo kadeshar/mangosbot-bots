@@ -84,4 +84,10 @@ namespace ai
 	public:
 		NetherspiteInfernalTooCloseTrigger(PlayerbotAI* ai) : CloseToCreatureTrigger(ai, "netherspite infernal too close", 17646, 20.0f) {}
 	};
+
+	class GruulCaveInTrigger : public CloseToSpellHazardTrigger
+	{
+	public:
+		GruulCaveInTrigger(PlayerbotAI* ai) : CloseToSpellHazardTrigger(ai, "gruul cave in", 36240, 20.0f, 30) {}
+	};
 }

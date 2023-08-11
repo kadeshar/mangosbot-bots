@@ -286,6 +286,8 @@ namespace ai
 
             creators["start four horseman fight"] = &TriggerContext::fourhorseman_start_fight;
             creators["end four horseman fight"] = &TriggerContext::fourhorseman_end_fight;
+
+            creators["gruul cave in"] = &TriggerContext::gruul_cave_in;
         }
 
     private:
@@ -522,5 +524,7 @@ namespace ai
 
         static Trigger* fourhorseman_start_fight(PlayerbotAI* ai) { return new FourHorsemanStartFightTrigger(ai); }
         static Trigger* fourhorseman_end_fight(PlayerbotAI* ai) { return new FourHorsemanEndFightTrigger(ai); }
+
+        static Trigger* gruul_cave_in(PlayerbotAI* ai) { return new GruulCaveInTrigger(ai); }
     };
 };

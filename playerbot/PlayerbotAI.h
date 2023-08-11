@@ -328,6 +328,7 @@ public:
     bool IsHeal(Player* player, bool inGroup = true);
     bool IsRanged(Player* player, bool inGroup = true);
     Creature* GetCreature(ObjectGuid guid);
+    DynamicObject* GetDynamicObject(ObjectGuid guid);
     Unit* GetUnit(ObjectGuid guid);
     static Unit* GetUnit(CreatureDataPair const* creatureDataPair);
     GameObject* GetGameObject(ObjectGuid guid);

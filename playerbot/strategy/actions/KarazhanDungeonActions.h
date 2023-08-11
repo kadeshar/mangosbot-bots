@@ -103,4 +103,10 @@ namespace ai
     public:
         NetherspiteInfernalMoveAwayAction(PlayerbotAI* ai) : MoveAwayFromCreature(ai, "move away from netherspite infernal", 17646, 21.0f) {}
     };
+
+    class GruulCaveInMoveAwayAction : public MoveAwayFromHazard
+    {
+    public:
+        GruulCaveInMoveAwayAction(PlayerbotAI* ai) : MoveAwayFromHazard(ai, "move away from gruul cave in") {}
+    };
 }

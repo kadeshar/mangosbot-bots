@@ -322,6 +322,8 @@ namespace ai
 
             creators["enable four horseman fight strategy"] = &ActionContext::fourhorseman_enable_fight_strategy;
             creators["disable four horseman fight strategy"] = &ActionContext::fourhorseman_disable_fight_strategy;
+
+            creators["move away from gruul cave in"] = &ActionContext::move_away_from_gruul_cave_in;
         }
 
     private:
@@ -573,5 +575,7 @@ namespace ai
         
         static Action* fourhorseman_enable_fight_strategy(PlayerbotAI* ai) { return new FourHorsemanEnableFightStrategyAction(ai); }
         static Action* fourhorseman_disable_fight_strategy(PlayerbotAI* ai) { return new FourHorsemanDisableFightStrategyAction(ai); }
+
+        static Action* move_away_from_gruul_cave_in(PlayerbotAI* ai) { return new GruulCaveInMoveAwayAction(ai); }
     };
 };

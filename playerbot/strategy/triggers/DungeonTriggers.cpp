@@ -14,289 +14,335 @@ using namespace ai;
 
 bool EnterDungeonTrigger::IsActive()
 {
-    // Don't trigger if strategy already set
-    if (!ai->HasStrategy(dungeonStrategy, BotState::BOT_STATE_COMBAT))
-    {
-        // If the bot is ready
-        if (bot->IsInWorld() && !bot->IsBeingTeleported())
-        {
-            // If the bot is on the specified dungeon
-            Map* map = bot->GetMap();
-            if (map && (map->IsDungeon() || map->IsRaid()))
-            {
-                return map->GetId() == mapID;
-            }
-        }
-    }
+	// Don't trigger if strategy already set
+	if (!ai->HasStrategy(dungeonStrategy, BotState::BOT_STATE_COMBAT))
+	{
+		// If the bot is ready
+		if (bot->IsInWorld() && !bot->IsBeingTeleported())
+		{
+			// If the bot is on the specified dungeon
+			Map* map = bot->GetMap();
+			if (map && (map->IsDungeon() || map->IsRaid()))
+			{
+				return map->GetId() == mapID;
+			}
+		}
+	}
 
-    return false;
+	return false;
 }
 
 bool LeaveDungeonTrigger::IsActive()
 {
-    // Don't trigger if strategy already unset
-    if (ai->HasStrategy(dungeonStrategy, BotState::BOT_STATE_COMBAT))
-    {
-        // If the bot is ready
-        if (bot->IsInWorld() && !bot->IsBeingTeleported())
-        {
-            // If the bot is not on the specified dungeon
-            return bot->GetMapId() != mapID;
-        }
-    }
+	// Don't trigger if strategy already unset
+	if (ai->HasStrategy(dungeonStrategy, BotState::BOT_STATE_COMBAT))
+	{
+		// If the bot is ready
+		if (bot->IsInWorld() && !bot->IsBeingTeleported())
+		{
+			// If the bot is not on the specified dungeon
+			return bot->GetMapId() != mapID;
+		}
+	}
 
-    return false;
+	return false;
 }
 
 bool StartBossFightTrigger::IsActive()
 {
-    // Don't trigger if strategy already set
-    if (!ai->HasStrategy(bossStrategy, BotState::BOT_STATE_COMBAT))
-    {
-        // If the bot is ready
-        if (bot->IsInWorld() && !bot->IsBeingTeleported())
-        {
-            AiObjectContext* context = ai->GetAiObjectContext();
-            const list<ObjectGuid> attackers = AI_VALUE(list<ObjectGuid>, "attackers");
-            for (const ObjectGuid& attackerGuid : attackers)
-            {
-                Unit* attacker = ai->GetUnit(attackerGuid);
-                if (attacker && attacker->GetEntry() == bossID)
-                {
-                    return true;
-                }
-            }
-        }
-    }
+	// Don't trigger if strategy already set
+	if (!ai->HasStrategy(bossStrategy, BotState::BOT_STATE_COMBAT))
+	{
+		// If the bot is ready
+		if (bot->IsInWorld() && !bot->IsBeingTeleported())
+		{
+			AiObjectContext* context = ai->GetAiObjectContext();
+			const list<ObjectGuid> attackers = AI_VALUE(list<ObjectGuid>, "attackers");
+			for (const ObjectGuid& attackerGuid : attackers)
+			{
+				Unit* attacker = ai->GetUnit(attackerGuid);
+				if (attacker && attacker->GetEntry() == bossID)
+				{
+					return true;
+				}
+			}
+		}
+	}
 
-    return false;
+	return false;
 }
 
 bool EndBossFightTrigger::IsActive()
 {
-    // Don't trigger if strategy already unset
-    if (ai->HasStrategy(bossStrategy, BotState::BOT_STATE_COMBAT))
-    {
-        // We consider the fight is over if not in combat
-        return !ai->IsStateActive(BotState::BOT_STATE_COMBAT);
-    }
+	// Don't trigger if strategy already unset
+	if (ai->HasStrategy(bossStrategy, BotState::BOT_STATE_COMBAT))
+	{
+		// We consider the fight is over if not in combat
+		return !ai->IsStateActive(BotState::BOT_STATE_COMBAT);
+	}
 
-    return false;
+	return false;
 }
 
 bool CloseToHazardTrigger::IsActive()
 {
-    // If the bot is ready
-    bool closeToHazard = false;
-    if (bot->IsInWorld() && !bot->IsBeingTeleported())
-    {
-        const list<ObjectGuid>& possibleHazards = GetPossibleHazards();
-        for (const ObjectGuid& possibleHazardGuid : possibleHazards)
-        {
-            if (IsHazardValid(possibleHazardGuid))
-            {
-                // Check if the bot is inside the hazard
-                const float distanceToHazard = GetDistanceToHazard(possibleHazardGuid);
-                if (distanceToHazard <= hazardRadius)
-                {
-                    closeToHazard = true;
-                }
-            }
+	// If the bot is ready
+	bool closeToHazard = false;
+	if (bot->IsInWorld() && !bot->IsBeingTeleported())
+	{
+		const list<ObjectGuid>& possibleHazards = GetPossibleHazards();
+		for (const ObjectGuid& possibleHazardGuid : possibleHazards)
+		{
+			if (IsHazardValid(possibleHazardGuid))
+			{
+				// Check if the bot is inside the hazard
+				const float distanceToHazard = GetDistanceToHazard(possibleHazardGuid);
+				if (distanceToHazard <= hazardRadius)
+				{
+					closeToHazard = true;
+				}
+			}
 
-            // Cache the hazards
-            Hazard hazard(possibleHazardGuid, hazardDuration, hazardRadius);
-            SET_AI_VALUE(Hazard, "add hazard", std::move(hazard));
-        }
-    }
+			// Cache the hazards
+			Hazard hazard(possibleHazardGuid, hazardDuration, hazardRadius);
+			SET_AI_VALUE(Hazard, "add hazard", std::move(hazard));
+		}
+	}
 
-    // Don't trigger if the bot is moving
-    if (closeToHazard)
-    {
-        const Action* lastExecutedAction = ai->GetLastExecutedAction(BotState::BOT_STATE_COMBAT);
-        if (lastExecutedAction)
-        {
-            const MovementAction* movementAction = dynamic_cast<const MovementAction*>(lastExecutedAction);
-            if (movementAction)
-            {
-                closeToHazard = false;
-            }
-        }
-    }
+	// Don't trigger if the bot is moving
+	if (closeToHazard)
+	{
+		const Action* lastExecutedAction = ai->GetLastExecutedAction(BotState::BOT_STATE_COMBAT);
+		if (lastExecutedAction)
+		{
+			const MovementAction* movementAction = dynamic_cast<const MovementAction*>(lastExecutedAction);
+			if (movementAction)
+			{
+				closeToHazard = false;
+			}
+		}
+	}
 
-    return closeToHazard;
+	return closeToHazard;
 }
 
 bool CloseToHazardTrigger::IsHazardValid(const ObjectGuid& hazzardGuid)
 {
-    if (hazzardGuid.IsGameObject())
-    {
-        return ai->GetGameObject(hazzardGuid) != nullptr;
-    }
-    else if (hazzardGuid.IsCreature())
-    {
-        return ai->GetCreature(hazzardGuid) != nullptr;
-    }
+	if (hazzardGuid.IsGameObject())
+	{
+		return ai->GetGameObject(hazzardGuid) != nullptr;
+	}
+	else if (hazzardGuid.IsCreature())
+	{
+		return ai->GetCreature(hazzardGuid) != nullptr;
+	}
+	else if (hazzardGuid.IsDynamicObject())
+	{
+		return ai->GetDynamicObject(hazzardGuid) != nullptr;
+	}
 
-    return false;
+	return false;
 }
 
 float CloseToHazardTrigger::GetDistanceToHazard(const ObjectGuid& hazzardGuid)
 {
-    if (hazzardGuid.IsGameObject())
-    {
-        GameObject* gameObjectHazard = ai->GetGameObject(hazzardGuid);
-        if (gameObjectHazard)
-        {
-            return bot->GetDistance(gameObjectHazard) + gameObjectHazard->GetObjectBoundingRadius();
-        }
-    }
-    else if (hazzardGuid.IsCreature())
-    {
-        Creature* creatureHazard = ai->GetCreature(hazzardGuid);
-        if (creatureHazard)
-        {
-            return bot->GetDistance(creatureHazard, true, DIST_CALC_COMBAT_REACH);
-        }
-    }
+	if (hazzardGuid.IsGameObject())
+	{
+		GameObject* gameObjectHazard = ai->GetGameObject(hazzardGuid);
+		if (gameObjectHazard)
+		{
+			return bot->GetDistance(gameObjectHazard) + gameObjectHazard->GetObjectBoundingRadius();
+		}
+	}
+	else if (hazzardGuid.IsCreature())
+	{
+		Creature* creatureHazard = ai->GetCreature(hazzardGuid);
+		if (creatureHazard)
+		{
+			return bot->GetDistance(creatureHazard, true, DIST_CALC_COMBAT_REACH);
+		}
+	}
+	else if (hazzardGuid.IsDynamicObject())
+	{
+		DynamicObject* dynamicObject = ai->GetDynamicObject(hazzardGuid);
+		if (dynamicObject) 
+		{
+			return bot->GetDistance(dynamicObject) + dynamicObject->GetObjectBoundingRadius();
+		}
+	}
 
-    return 99999999.0f;
+	return 99999999.0f;
 }
 
 std::list<ObjectGuid> CloseToGameObjectHazardTrigger::GetPossibleHazards()
 {
-    // This game objects have a maximum range equal to the sight distance on config file (default 60 yards)
-    return AI_VALUE2(list<ObjectGuid>, "nearest game objects no los", gameObjectID);
+	// This game objects have a maximum range equal to the sight distance on config file (default 60 yards)
+	return AI_VALUE2(list<ObjectGuid>, "nearest game objects no los", gameObjectID);
 }
 
 std::list<ObjectGuid> CloseToCreatureHazardTrigger::GetPossibleHazards()
 {
-    std::list<ObjectGuid> possibleHazards;
+	std::list<ObjectGuid> possibleHazards;
 
-    std::list<Unit*> creatures;
-    MaNGOS::AllCreaturesOfEntryInRangeCheck u_check(bot, creatureID, hazardRadius);
-    MaNGOS::UnitListSearcher<MaNGOS::AllCreaturesOfEntryInRangeCheck> searcher(creatures, u_check);
-    Cell::VisitAllObjects(bot, searcher, hazardRadius);
-    for (Unit* unit : creatures)
-    {
-        possibleHazards.push_back(unit->GetObjectGuid());
-    }
+	std::list<Unit*> creatures;
+	MaNGOS::AllCreaturesOfEntryInRangeCheck u_check(bot, creatureID, hazardRadius);
+	MaNGOS::UnitListSearcher<MaNGOS::AllCreaturesOfEntryInRangeCheck> searcher(creatures, u_check);
+	Cell::VisitAllObjects(bot, searcher, hazardRadius);
+	for (Unit* unit : creatures)
+	{
+		possibleHazards.push_back(unit->GetObjectGuid());
+	}
 
-    return possibleHazards;
+	return possibleHazards;
 }
 
 bool CloseToCreatureHazardTrigger::IsHazardValid(const ObjectGuid& hazzardGuid)
 {
-    Creature* creatureHazard = ai->GetCreature(hazzardGuid);
-    if (creatureHazard)
-    {
-        // Check if the creature is not targeting the bot
-        if (!creatureHazard->GetVictim() || (creatureHazard->GetVictim()->GetObjectGuid() != bot->GetObjectGuid()))
-        {
-            return true;
-        }
-    }
+	Creature* creatureHazard = ai->GetCreature(hazzardGuid);
+	if (creatureHazard)
+	{
+		// Check if the creature is not targeting the bot
+		if (!creatureHazard->GetVictim() || (creatureHazard->GetVictim()->GetObjectGuid() != bot->GetObjectGuid()))
+		{
+			return true;
+		}
+	}
 
-    return false;
+	return false;
+}
+
+std::list<ObjectGuid> CloseToSpellHazardTrigger::GetPossibleHazards()
+{
+	std::list<ObjectGuid> possibleHazards;
+
+	std::list<ObjectGuid> nearestDynObjects = AI_VALUE(list<ObjectGuid>, "nearest dynamic objects");
+
+	if (nearestDynObjects.empty())
+		return possibleHazards;
+
+	for (list<ObjectGuid>::iterator i = nearestDynObjects.begin(); i != nearestDynObjects.end(); ++i)
+	{
+		DynamicObject* dynamicObject = ai->GetDynamicObject(*i);
+		if (!dynamicObject || dynamicObject->GetSpellId() != spellId)
+			continue;
+
+		possibleHazards.push_back(dynamicObject->GetObjectGuid());
+	}
+
+	return possibleHazards;
+}
+
+bool CloseToSpellHazardTrigger::IsHazardValid(const ObjectGuid& hazzardGuid)
+{
+	DynamicObject* dynamicObject = ai->GetDynamicObject(hazzardGuid);
+
+	// Check if the creature is affecting the bot
+	if (dynamicObject->IsAffecting(bot))
+	{
+		return true;
+	}
+
+	return false;
 }
 
 std::list<ObjectGuid> CloseToHostileCreatureHazardTrigger::GetPossibleHazards()
 {
-    std::list<ObjectGuid> possibleHazards;
-    std::list<ObjectGuid> attackers = AI_VALUE(std::list<ObjectGuid>, "attackers");
+	std::list<ObjectGuid> possibleHazards;
+	std::list<ObjectGuid> attackers = AI_VALUE(std::list<ObjectGuid>, "attackers");
 
-    for (const ObjectGuid& attackerGuid : attackers)
-    {
-        Creature* attacker = ai->GetCreature(attackerGuid);
-        if (attacker && attacker->GetEntry() == creatureID)
-        {
-            possibleHazards.push_back(attackerGuid);
-        }
-    }
+	for (const ObjectGuid& attackerGuid : attackers)
+	{
+		Creature* attacker = ai->GetCreature(attackerGuid);
+		if (attacker && attacker->GetEntry() == creatureID)
+		{
+			possibleHazards.push_back(attackerGuid);
+		}
+	}
 
-    return possibleHazards;
+	return possibleHazards;
 }
 
 bool CloseToCreatureTrigger::IsActive()
 {
-    // If the bot is ready
-    if (bot->IsInWorld() && !bot->IsBeingTeleported())
-    {
-        AiObjectContext* context = ai->GetAiObjectContext();
+	// If the bot is ready
+	if (bot->IsInWorld() && !bot->IsBeingTeleported())
+	{
+		AiObjectContext* context = ai->GetAiObjectContext();
 
-        // Iterate through the near creatures
-        list<Unit*> creatures;
-        MaNGOS::AllCreaturesOfEntryInRangeCheck u_check(bot, creatureID, range);
-        MaNGOS::UnitListSearcher<MaNGOS::AllCreaturesOfEntryInRangeCheck> searcher(creatures, u_check);
-        Cell::VisitAllObjects(bot, searcher, range);
-        for (Unit* unit : creatures)
-        {
-            Creature* creature = (Creature*)unit;
-            if (creature)
-            {
-                // Check if the bot is not being targeted by the creature
-                if (!creature->GetVictim() || (creature->GetVictim()->GetObjectGuid() != bot->GetObjectGuid()))
-                {
-                    // See if the creature is within the specified distance
-                    if (bot->IsWithinDist(creature, range))
-                    {
-                        return true;
-                    }
-                }
-            }
-        }
-    }
+		// Iterate through the near creatures
+		list<Unit*> creatures;
+		MaNGOS::AllCreaturesOfEntryInRangeCheck u_check(bot, creatureID, range);
+		MaNGOS::UnitListSearcher<MaNGOS::AllCreaturesOfEntryInRangeCheck> searcher(creatures, u_check);
+		Cell::VisitAllObjects(bot, searcher, range);
+		for (Unit* unit : creatures)
+		{
+			Creature* creature = (Creature*)unit;
+			if (creature)
+			{
+				// Check if the bot is not being targeted by the creature
+				if (!creature->GetVictim() || (creature->GetVictim()->GetObjectGuid() != bot->GetObjectGuid()))
+				{
+					// See if the creature is within the specified distance
+					if (bot->IsWithinDist(creature, range))
+					{
+						return true;
+					}
+				}
+			}
+		}
+	}
 
-    return false;
+	return false;
 }
 
 bool ItemReadyTrigger::IsActive()
 {
-    // Check if the bot has the item or if it has cheats enabled
-    if (bot->HasItemCount(itemID, 1) || ai->HasCheat(BotCheatMask::item))
-    {
-        const ItemPrototype* proto = sObjectMgr.GetItemPrototype(itemID);
-        if (proto)
-        {
-            // Check if the item is in cooldown
-            bool inCooldown = false;
-            for (uint8 i = 0; i < MAX_ITEM_PROTO_SPELLS; ++i)
-            {
-                if (proto->Spells[i].SpellTrigger != ITEM_SPELLTRIGGER_ON_USE)
-                {
-                    continue;
-                }
+	// Check if the bot has the item or if it has cheats enabled
+	if (bot->HasItemCount(itemID, 1) || ai->HasCheat(BotCheatMask::item))
+	{
+		const ItemPrototype* proto = sObjectMgr.GetItemPrototype(itemID);
+		if (proto)
+		{
+			// Check if the item is in cooldown
+			bool inCooldown = false;
+			for (uint8 i = 0; i < MAX_ITEM_PROTO_SPELLS; ++i)
+			{
+				if (proto->Spells[i].SpellTrigger != ITEM_SPELLTRIGGER_ON_USE)
+				{
+					continue;
+				}
 
-                const uint32 spellID = proto->Spells[i].SpellId;
-                if (spellID > 0)
-                {
-                    if (!sServerFacade.IsSpellReady(bot, spellID) ||
-                        !sServerFacade.IsSpellReady(bot, spellID, itemID))
-                    {
-                        inCooldown = true;
-                        break;
-                    }
-                }
-            }
+				const uint32 spellID = proto->Spells[i].SpellId;
+				if (spellID > 0)
+				{
+					if (!sServerFacade.IsSpellReady(bot, spellID) ||
+						!sServerFacade.IsSpellReady(bot, spellID, itemID))
+					{
+						inCooldown = true;
+						break;
+					}
+				}
+			}
 
-            return !inCooldown;
-        }
-    }
+			return !inCooldown;
+		}
+	}
 
-    return false;
+	return false;
 }
 
 bool ItemBuffReadyTrigger::IsActive()
 {
-    if (!bot->HasAura(buffID))
-    {
-        return ItemReadyTrigger::IsActive();
-    }
+	if (!bot->HasAura(buffID))
+	{
+		return ItemReadyTrigger::IsActive();
+	}
 
-    return false;
+	return false;
 }
 
 bool BuffOnTargetTrigger::IsActive()
 {
-    const Unit* target = GetTarget();
-    return target && target->HasAura(buffID);
+	const Unit* target = GetTarget();
+	return target && target->HasAura(buffID);
 }

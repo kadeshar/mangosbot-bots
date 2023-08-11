@@ -3,6 +3,8 @@
 
 namespace ai
 {
+
+
     class EnterDungeonTrigger : public Trigger
     {
     public:
@@ -116,6 +118,21 @@ namespace ai
 
     protected:
         uint32 creatureID;
+    };
+
+    class CloseToSpellHazardTrigger : public CloseToHazardTrigger
+    {
+    public:
+        CloseToSpellHazardTrigger(PlayerbotAI* ai, string name, uint32 spellId, float radius, time_t expirationTime)
+            : CloseToHazardTrigger(ai, name, 1, radius, expirationTime)
+            , spellId(spellId) {}
+
+    private:
+        std::list<ObjectGuid> GetPossibleHazards() override;
+        bool IsHazardValid(const ObjectGuid& hazzardGuid) override;
+
+    protected:
+        uint32 spellId;
     };
 
     class CloseToHostileCreatureHazardTrigger : public CloseToCreatureHazardTrigger

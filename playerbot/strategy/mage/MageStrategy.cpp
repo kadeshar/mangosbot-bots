@@ -523,6 +523,10 @@ void MageStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
     triggers.push_back(new TriggerNode(
         "no mana",
         NextAction::array(0, new NextAction("shoot", ACTION_NORMAL), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "gruul cave in",
+        NextAction::array(0, new NextAction("move away from gruul cave in", 99.0f), NULL)));
 }
 
 void MageStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)

@@ -98,7 +98,7 @@ bool HasAreaDebuffValue::Calculate()
     if (!checkTarget)
         return false;
 
-    list<ObjectGuid> nearestDynObjects = *context->GetValue<list<ObjectGuid> >("nearest dynamic objects no los");
+    list<ObjectGuid> nearestDynObjects = AI_VALUE(list<ObjectGuid>, "nearest dynamic objects no los");
     if (nearestDynObjects.empty())
         return false;
 

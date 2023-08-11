@@ -2198,8 +2198,22 @@ Creature* PlayerbotAI::GetCreature(ObjectGuid guid)
     Map* map = bot->GetMap();
     if (!map)
         return NULL;
-
+    
     return map->GetCreature(guid);
+
+}
+
+DynamicObject* PlayerbotAI::GetDynamicObject(ObjectGuid guid)
+{
+    if (!guid)
+        return NULL;
+
+    Map* map = bot->GetMap();
+    if (!map)
+        return NULL;
+
+    return map->GetDynamicObject(guid);
+
 }
 
 GameObject* PlayerbotAI::GetGameObject(ObjectGuid guid)
