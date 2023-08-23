@@ -75,6 +75,12 @@ PriestCureStrategy::PriestCureStrategy(PlayerbotAI* ai) : Strategy(ai)
 
 void PriestCureStrategy::InitCombatTriggers(std::list<TriggerNode*> &triggers)
 {
+#ifndef MANGOSBOT_ZERO
+    triggers.push_back(new TriggerNode(
+        "mass dispel on party",
+        NextAction::array(0, new NextAction("mass dispel", 54.0f), NULL)));
+#endif
+
     triggers.push_back(new TriggerNode(
         "dispel magic",
         NextAction::array(0, new NextAction("dispel magic", 53.0f), NULL)));

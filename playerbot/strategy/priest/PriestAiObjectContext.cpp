@@ -86,6 +86,7 @@ namespace ai
                 creators["shadow word: pain on attacker"] = &TriggerFactoryInternal::shadow_word_pain_on_attacker;
                 creators["dispel magic"] = &TriggerFactoryInternal::dispel_magic;
                 creators["dispel magic on party"] = &TriggerFactoryInternal::dispel_magic_party_member;
+                creators["mass dispel on party"] = &TriggerFactoryInternal::mass_dispel_party_member;
                 creators["cure disease"] = &TriggerFactoryInternal::cure_disease;
                 creators["party member cure disease"] = &TriggerFactoryInternal::party_member_cure_disease;
                 creators["power word: fortitude"] = &TriggerFactoryInternal::power_word_fortitude;
@@ -139,6 +140,7 @@ namespace ai
             static Trigger* shadow_word_pain_on_attacker(PlayerbotAI* ai) { return new PowerWordPainOnAttackerTrigger(ai); }
             static Trigger* dispel_magic(PlayerbotAI* ai) { return new DispelMagicTrigger(ai); }
             static Trigger* dispel_magic_party_member(PlayerbotAI* ai) { return new DispelMagicPartyMemberTrigger(ai); }
+            static Trigger* mass_dispel_party_member(PlayerbotAI* ai) { return new MassDispelTrigger(ai); }
             static Trigger* cure_disease(PlayerbotAI* ai) { return new CureDiseaseTrigger(ai); }
             static Trigger* party_member_cure_disease(PlayerbotAI* ai) { return new PartyMemberCureDiseaseTrigger(ai); }
             static Trigger* power_word_fortitude(PlayerbotAI* ai) { return new PowerWordFortitudeTrigger(ai); }

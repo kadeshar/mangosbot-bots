@@ -19,8 +19,6 @@ namespace ai
     BUFF_ACTION(CastDivineSpiritAction, "divine spirit");
     BUFF_PARTY_ACTION(CastDivineSpiritOnPartyAction, "divine spirit");
     GREATER_BUFF_PARTY_ACTION(CastPrayerOfSpiritOnPartyAction, "prayer of spirit");
-    //disc 2.4.3
-    SPELL_ACTION(CastMassDispelAction, "mass dispel");
 
     // disc talents
     BUFF_ACTION(CastPowerInfusionAction, "power infusion");
@@ -112,5 +110,51 @@ namespace ai
             ai->RemoveAura("shadowform");
             return true;
         }
+    };
+
+    class CastMassDispelAction : public Action
+    {
+    public:
+        CastMassDispelAction(PlayerbotAI* ai) : Action(ai, "mass dispel") {}
+
+        bool Execute(Event& event) override
+        {
+            uint32 spellDuration = sPlayerbotAIConfig.globalCoolDown;
+            if (ai->CastSpell(spellId, targetUnit, nullptr, false, &spellDuration))
+            {
+                if (ai->HasCheat(BotCheatMask::attackspeed))
+                    spellDuration = 1;
+
+                SetDuration(spellDuration);
+                return true;
+            }
+
+            return false;
+        }
+
+        bool isPossible() override
+        {
+            if (!ai->HasSpell(spellId))
+                return false;
+
+            Group* pGroup = bot->GetGroup();
+            if (!pGroup)
+                return false;
+
+            for (GroupReference* itr = pGroup->GetFirstMember(); itr != nullptr; itr = itr->next())
+            {
+                if (Player* target = itr->getSource(); target && ai->HasAuraToDispel(target, DISPEL_MAGIC))
+                {
+                    targetUnit = target;
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+    private:
+        uint32 const spellId = 32375;
+        Unit* targetUnit;
     };
 }

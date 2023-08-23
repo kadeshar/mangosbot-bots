@@ -103,4 +103,30 @@ namespace ai
             return PartyMemberLowHealthTrigger::IsActive() && AI_VALUE2(uint8, "health", "self target") < sPlayerbotAIConfig.mediumHealth;
         }
     };
+
+    class MassDispelTrigger : public Trigger
+    {
+    public:
+        MassDispelTrigger(PlayerbotAI* ai) : Trigger(ai, "mass dispel on party", 1) {}
+
+        virtual bool IsActive()
+        {
+            Group* pGroup = bot->GetGroup();
+            if (!pGroup)
+                return false;
+
+            int dispellableTargets = 0;
+
+            for (GroupReference* itr = pGroup->GetFirstMember(); itr != nullptr; itr = itr->next())
+            {
+                if (Player* target = itr->getSource(); target && ai->HasAuraToDispel(target, DISPEL_MAGIC))
+                    dispellableTargets++;
+
+                if (dispellableTargets == 3) // Required minimum 3 targets to dispel
+                    return true;
+            }
+
+            return false;
+        }
+    };
 }
