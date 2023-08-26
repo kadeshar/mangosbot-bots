@@ -8,116 +8,173 @@ using namespace ai;
 
 list<ObjectGuid> AoeCountValue::FindMaxDensity(Player* bot, float range)
 {
-    int maxCount = 0;
-    ObjectGuid maxGroup;
-    map<ObjectGuid, list<ObjectGuid> > groups;
-    if (bot)
-    {
-        list<ObjectGuid> units = *bot->GetPlayerbotAI()->GetAiObjectContext()->GetValue<list<ObjectGuid>>("attackers");
-        
-        for (list<ObjectGuid>::iterator i = units.begin(); i != units.end(); ++i)
-        {
-            Unit* unit = bot->GetPlayerbotAI()->GetUnit(*i);
-            if (unit)
-            {
-                float distanceToPlayer = sServerFacade.GetDistance2d(unit, bot);
-                if (sServerFacade.IsDistanceLessOrEqualThan(distanceToPlayer, range))
-                {
-                    for (list<ObjectGuid>::iterator j = units.begin(); j != units.end(); ++j)
-                    {
-                        Unit* other = bot->GetPlayerbotAI()->GetUnit(*j);
-                        if (other)
-                        {
-                            float d = sServerFacade.GetDistance2d(unit, other);
-                            if (sServerFacade.IsDistanceLessOrEqualThan(d, sPlayerbotAIConfig.aoeRadius * 2.0f))
-                            {
-                                groups[*i].push_back(*j);
-                            }
-                        }
-                    }
+	int maxCount = 0;
+	ObjectGuid maxGroup;
+	map<ObjectGuid, list<ObjectGuid> > groups;
+	if (bot)
+	{
+		list<ObjectGuid> units = *bot->GetPlayerbotAI()->GetAiObjectContext()->GetValue<list<ObjectGuid>>("attackers");
 
-                    if (maxCount < groups[*i].size())
-                    {
-                        maxCount = groups[*i].size();
-                        maxGroup = *i;
-                    }
-                }
-            }
-        }
-    }
+		for (list<ObjectGuid>::iterator i = units.begin(); i != units.end(); ++i)
+		{
+			Unit* unit = bot->GetPlayerbotAI()->GetUnit(*i);
+			if (unit)
+			{
+				float distanceToPlayer = sServerFacade.GetDistance2d(unit, bot);
+				if (sServerFacade.IsDistanceLessOrEqualThan(distanceToPlayer, range))
+				{
+					for (list<ObjectGuid>::iterator j = units.begin(); j != units.end(); ++j)
+					{
+						Unit* other = bot->GetPlayerbotAI()->GetUnit(*j);
+						if (other)
+						{
+							float d = sServerFacade.GetDistance2d(unit, other);
+							if (sServerFacade.IsDistanceLessOrEqualThan(d, sPlayerbotAIConfig.aoeRadius * 2.0f))
+							{
+								groups[*i].push_back(*j);
+							}
+						}
+					}
 
-    if (!maxCount)
-    {
-        return list<ObjectGuid>();
-    }
+					if (maxCount < groups[*i].size())
+					{
+						maxCount = groups[*i].size();
+						maxGroup = *i;
+					}
+				}
+			}
+		}
+	}
 
-    return groups[maxGroup];
+	if (!maxCount)
+	{
+		return list<ObjectGuid>();
+	}
+
+	return groups[maxGroup];
 }
 
 WorldLocation AoePositionValue::Calculate()
 {
-    list<ObjectGuid> group = AoeCountValue::FindMaxDensity(bot);
-    if (group.empty())
-        return WorldLocation();
+	list<ObjectGuid> group = AoeCountValue::FindMaxDensity(bot);
+	if (group.empty())
+		return WorldLocation();
 
-    // Note: don't know where these values come from or even used.
-    float x1, y1, x2, y2;
-    for (list<ObjectGuid>::iterator i = group.begin(); i != group.end(); ++i)
-    {
-        Unit* unit = bot->GetPlayerbotAI()->GetUnit(*i);
-        if (!unit)
-            continue;
+	// Note: don't know where these values come from or even used.
+	float x1, y1, x2, y2;
+	for (list<ObjectGuid>::iterator i = group.begin(); i != group.end(); ++i)
+	{
+		Unit* unit = bot->GetPlayerbotAI()->GetUnit(*i);
+		if (!unit)
+			continue;
 
-        if (i == group.begin() || x1 > unit->GetPositionX())
-            x1 = unit->GetPositionX();
-        if (i == group.begin() || x2 < unit->GetPositionX())
-            x2 = unit->GetPositionX();
-        if (i == group.begin() || y1 > unit->GetPositionY())
-            y1 = unit->GetPositionY();
-        if (i == group.begin() || y2 < unit->GetPositionY())
-            y2 = unit->GetPositionY();
-    }
-    float x = (x1 + x2) / 2;
-    float y = (y1 + y2) / 2;
-    float z = bot->GetPositionZ() + CONTACT_DISTANCE;;
-    bot->UpdateAllowedPositionZ(x, y, z);
-    return WorldLocation(bot->GetMapId(), x, y, z, 0);
+		if (i == group.begin() || x1 > unit->GetPositionX())
+			x1 = unit->GetPositionX();
+		if (i == group.begin() || x2 < unit->GetPositionX())
+			x2 = unit->GetPositionX();
+		if (i == group.begin() || y1 > unit->GetPositionY())
+			y1 = unit->GetPositionY();
+		if (i == group.begin() || y2 < unit->GetPositionY())
+			y2 = unit->GetPositionY();
+	}
+	float x = (x1 + x2) / 2;
+	float y = (y1 + y2) / 2;
+	float z = bot->GetPositionZ() + CONTACT_DISTANCE;;
+	bot->UpdateAllowedPositionZ(x, y, z);
+	return WorldLocation(bot->GetMapId(), x, y, z, 0);
 }
 
 uint8 AoeCountValue::Calculate()
 {
-    return FindMaxDensity(bot).size();
+	return FindMaxDensity(bot).size();
+}
+
+list<ObjectGuid> AoeDispelCountValue::FindMaxDensity(Player* bot, PlayerbotAI* ai, float range)
+{
+	int maxCount = 0;
+	ObjectGuid maxGroup;
+	map<ObjectGuid, list<ObjectGuid> > groups;
+	if (!bot)
+		return list<ObjectGuid>();
+
+	Group* group = bot->GetGroup();
+	if (!group)
+		return list<ObjectGuid>();
+
+	for (GroupReference* ref = group->GetFirstMember(); ref; ref = ref->next())
+	{
+		Player* target = ref->getSource();
+
+		if (target && ai->HasAuraToDispel(target, DISPEL_MAGIC))
+		{
+			float distanceToPlayer = sServerFacade.GetDistance2d(target, bot);
+			if (sServerFacade.IsDistanceLessOrEqualThan(distanceToPlayer, range))
+			{
+				for (GroupReference* grpRef = group->GetFirstMember(); grpRef; grpRef = grpRef->next())
+				{
+					Unit* other = grpRef->getSource();
+					if (other)
+					{
+						float d = sServerFacade.GetDistance2d(target, other);
+						if (sServerFacade.IsDistanceLessOrEqualThan(d, sPlayerbotAIConfig.aoeRadius * 2.0f))
+						{
+							groups[target->GetObjectGuid()].push_back(other->GetObjectGuid());
+						}
+					}
+				}
+
+				if (maxCount < groups[target->GetObjectGuid()].size())
+				{
+					maxCount = groups[target->GetObjectGuid()].size();
+					maxGroup = target->GetObjectGuid();
+				}
+			}
+		}
+
+	}
+
+	if (!maxCount)
+	{
+		return list<ObjectGuid>();
+	}
+
+	return groups[maxGroup];
+}
+
+uint8 AoeDispelCountValue::Calculate()
+{
+	return FindMaxDensity(bot, ai).size();
 }
 
 bool HasAreaDebuffValue::Calculate()
 {
-    if (!GetTarget())
-        return false;
+	if (!GetTarget())
+		return false;
 
-    Unit* checkTarget = GetTarget();
-    if (!checkTarget)
-        return false;
+	Unit* checkTarget = GetTarget();
+	if (!checkTarget)
+		return false;
 
-    list<ObjectGuid> nearestDynObjects = *context->GetValue<list<ObjectGuid> >("nearest dynamic objects no los");
-    if (nearestDynObjects.empty())
-        return false;
+	list<ObjectGuid> nearestDynObjects = *context->GetValue<list<ObjectGuid> >("nearest dynamic objects no los");
+	if (nearestDynObjects.empty())
+		return false;
 
-    for (list<ObjectGuid>::iterator i = nearestDynObjects.begin(); i != nearestDynObjects.end(); ++i)
-    {
-        DynamicObject* go = checkTarget->GetMap()->GetDynamicObject(*i);
-        if (!go)
-            continue;
+	for (list<ObjectGuid>::iterator i = nearestDynObjects.begin(); i != nearestDynObjects.end(); ++i)
+	{
+		DynamicObject* go = checkTarget->GetMap()->GetDynamicObject(*i);
+		if (!go)
+			continue;
 
-        SpellEntry const* spellProto = sSpellTemplate.LookupEntry<SpellEntry>(go->GetSpellId());
-        if (!spellProto)
-            continue;
+		SpellEntry const* spellProto = sSpellTemplate.LookupEntry<SpellEntry>(go->GetSpellId());
+		if (!spellProto)
+			continue;
 
-        if (IsPositiveEffect(spellProto, go->GetEffIndex()))
-            continue;
+		if (IsPositiveEffect(spellProto, go->GetEffIndex()))
+			continue;
 
-        if (go->IsAffecting(checkTarget))
-            return true;
-    }
+		if (go->IsAffecting(checkTarget))
+			return true;
+	}
 
-    return false;
+	return false;
 }
