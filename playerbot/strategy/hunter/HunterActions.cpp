@@ -44,21 +44,18 @@ bool CastAutoShotAction::Execute(Event& event)
 
 bool CastSteadyShotAction::Execute(Event& event)
 {
-    bool castResult = CastSpellAction::Execute(event);
-
-    if (castResult == false)
+    if (CastSpellAction::Execute(event))
     {
-        return castResult;
+        const Item* equippedWeapon = bot->GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_RANGED);
+        if (equippedWeapon)
+        {
+            const ItemPrototype* itemPrototype = equippedWeapon->GetProto();
+            weaponDelay = itemPrototype->Delay + sPlayerbotAIConfig.globalCoolDown;
+            SetDuration(weaponDelay);
+        }
+
+        return true;
     }
 
-    const Item* equippedWeapon = bot->GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_RANGED);
-
-    if (equippedWeapon)
-    {
-        const ItemPrototype* itemPrototype = equippedWeapon->GetProto();
-        weaponDelay = itemPrototype->Delay + sPlayerbotAIConfig.globalCoolDown;
-        SetDuration(weaponDelay);
-    }
-
-    return castResult;
+    return false;
 }
