@@ -18,6 +18,7 @@ public:
         creators["intimidation"] = &intimidation;
         creators["scatter shot"] = &scatter_shot;
         creators["feign death threat"] = &feign_death_threat;
+        creators["steady shot"] = &steady_shot;
     }
 
 private:
@@ -36,6 +37,14 @@ private:
     ACTION_NODE_A(scatter_shot, "scatter shot", "intimidation");
 
     ACTION_NODE_C(feign_death_threat, "feign death", "remove feign death");
+
+    static ActionNode* steady_shot(PlayerbotAI* ai)
+    {
+        return new ActionNode("steady shot",
+            /*P*/ NextAction::array(0, new NextAction("auto shot"), NULL),
+            /*A*/ NULL,
+            /*C*/ NextAction::array(0, new NextAction("multi-shot"), NULL));
+    }
 };
 
 HunterStrategy::HunterStrategy(PlayerbotAI* ai) : ClassStrategy(ai)
@@ -533,8 +542,16 @@ void HunterStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
         NextAction::array(0, new NextAction("hunter's mark", ACTION_NORMAL + 6), NULL)));
 
     triggers.push_back(new TriggerNode(
-        "aimed shot",
-        NextAction::array(0, new NextAction("aimed shot", ACTION_NORMAL + 2), NULL)));
+        "kill command",
+        NextAction::array(0, new NextAction("kill command", ACTION_NORMAL + 6), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "steady shot",
+        NextAction::array(0, new NextAction("steady shot", ACTION_NORMAL + 5), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "low mana",
+        NextAction::array(0, new NextAction("auto shot", ACTION_NORMAL + 4), NULL)));
 
     triggers.push_back(new TriggerNode(
         "enemy is close",

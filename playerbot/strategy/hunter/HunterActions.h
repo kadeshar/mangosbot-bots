@@ -162,6 +162,12 @@ namespace ai
         CastRapidFireAction(PlayerbotAI* ai) : CastBuffSpellAction(ai, "rapid fire") {}
     };
 
+    class CastKillCommandAction : public CastBuffSpellAction
+    {
+    public:
+        CastKillCommandAction(PlayerbotAI* ai) : CastBuffSpellAction(ai, "kill command") {}
+    };
+
     class CastBlackArrow : public CastRangedDebuffSpellAction
     {
     public:
