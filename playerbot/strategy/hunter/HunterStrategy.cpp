@@ -36,7 +36,6 @@ private:
     ACTION_NODE_A(scatter_shot, "scatter shot", "intimidation");
 
     ACTION_NODE_C(feign_death_threat, "feign death", "remove feign death");
-
 };
 
 HunterStrategy::HunterStrategy(PlayerbotAI* ai) : ClassStrategy(ai)
