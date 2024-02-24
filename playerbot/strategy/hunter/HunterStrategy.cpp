@@ -18,7 +18,6 @@ public:
         creators["intimidation"] = &intimidation;
         creators["scatter shot"] = &scatter_shot;
         creators["feign death threat"] = &feign_death_threat;
-        creators["steady shot"] = &steady_shot;
     }
 
 private:
@@ -38,13 +37,6 @@ private:
 
     ACTION_NODE_C(feign_death_threat, "feign death", "remove feign death");
 
-    static ActionNode* steady_shot(PlayerbotAI* ai)
-    {
-        return new ActionNode("steady shot",
-            /*P*/ NextAction::array(0, new NextAction("auto shot"), NULL),
-            /*A*/ NULL,
-            /*C*/ NextAction::array(0, new NextAction("multi-shot"), NULL));
-    }
 };
 
 HunterStrategy::HunterStrategy(PlayerbotAI* ai) : ClassStrategy(ai)
@@ -664,7 +656,7 @@ void HunterAoeStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
         NextAction::array(0, new NextAction("explosive trap on target", ACTION_INTERRUPT), NULL)));
 
     triggers.push_back(new TriggerNode(
-        "ranged medium aoe",
+        "ranged high aoe",
         NextAction::array(0, new NextAction("volley", ACTION_HIGH + 3), NULL)));
 
     triggers.push_back(new TriggerNode(
