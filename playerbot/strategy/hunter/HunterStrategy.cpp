@@ -541,10 +541,6 @@ void HunterStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
         NextAction::array(0, new NextAction("steady shot", ACTION_NORMAL + 5), NULL)));
 
     triggers.push_back(new TriggerNode(
-        "low mana",
-        NextAction::array(0, new NextAction("auto shot", ACTION_NORMAL + 4), NULL)));
-
-    triggers.push_back(new TriggerNode(
         "enemy is close",
         NextAction::array(0, new NextAction("raptor strike", ACTION_NORMAL + 1), NULL)));
 }
