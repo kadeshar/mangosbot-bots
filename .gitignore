@@ -121,11 +121,3 @@ ipch
 
 botpch.pch
 /.vs
-/sql/.vs/ProjectSettings.json
-/sql/.vs/slnx.sqlite
-/sql/.vs/sql/FileContentIndex/5bd84516-42de-4ac6-b925-f9553baf07b9.vsidx
-/sql/.vs/sql/v17
-/sql/.vs/sql/v17/.wsuo
-/sql/.vs/VSWorkspaceState.json
-/.gitignore
-/.gitignore
