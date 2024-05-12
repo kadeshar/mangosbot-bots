@@ -38,13 +38,6 @@ jobs:
           ref: ${{env.CORE_BRANCH}}
           repository: ${{env.CORE_REPO_OWNER}}/mangos-classic
           path: ${{env.REPO_DIR}}
-          # submodules: recursive
-          
-      - name: Checkout Bots
-        uses: actions/checkout@v2
-        with:
-          ref: ${{env.BOTS_BRANCH}}
-          path: "${{env.REPO_DIR}}/src/modules/Bots"
 
       - uses: FranzDiebold/github-env-vars-action@v2
       - name: Create Build Environment
